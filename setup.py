@@ -31,7 +31,7 @@ build_libCZI()
 extra_compile_args = sysconfig.get_config_var('CFLAGS').split()
 platform_ = platform.system()
 if platform_ == 'Linux':
-    os.environ["CC"] = "g++-6"; os.environ["CXX"] = "g++-6"
+    #os.environ["CC"] = "g++-6"; os.environ["CXX"] = "g++-6"
     extra_compile_args += ["-std=c++11", "-Wall", "-O3"]
 elif platform_ == 'Darwin':
     extra_compile_args += ["-std=c++11", "-Wall", "-O3", "-stdlib=libc++", "-mmacosx-version-min=10.9"]
