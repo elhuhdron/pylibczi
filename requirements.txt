@@ -1,0 +1,6 @@
+numpy
+scipy
+lxml
+skimage
+matplotlib
+tifffile
