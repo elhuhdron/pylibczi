@@ -36,7 +36,11 @@ import skimage.measure as measure
 from matplotlib import pylab as pl
 import matplotlib.patches as patches
 
-from .CziFile import CziFile
+# xxx - some better way to handle import if running from command line?
+try:
+    from .CziFile import CziFile
+except ImportError as exc:
+    from CziFile import CziFile
 
 class CziScene(CziFile):
     """Zeiss CZI scene image and metadata.
@@ -438,7 +442,7 @@ class CziScene(CziFile):
     @staticmethod
     def _addArgs(p):
         # adds arguments required for this object to specified ArgumentParser object
-        p.add_argument('--czifile-in', nargs=1, type=str, default=[''], help='Input czi file')
+        p.add_argument('--czi-filename', nargs=1, type=str, default=[''], help='Input czi file')
         p.add_argument('--scene', nargs=1, type=int, default=[0], metavar='S', help='Specify scene to use in czi-file')
         p.add_argument('--metafile-out', nargs=1, type=str, default=[''], help='Meta file out (optional)')
         p.add_argument('--tifffile-out', nargs=1, type=str, default=[''], help='Tiff file out (optional)')

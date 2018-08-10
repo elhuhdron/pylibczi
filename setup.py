@@ -14,12 +14,11 @@ import os
 import numpy
 import sysconfig
 import platform
+import subprocess
 
-# modify these paths to point at lib czi source and build
-include_libCZI = '/home/pwatkins/gits/libCZI/Src'
-lib_libCZI = '/home/pwatkins/gits/libCZI/build/Src/libCZI'
-#include_libCZI = '/Users/pwatkins/gits/libCZI/Src'
-#lib_libCZI = '/Users/pwatkins/gits/libCZI/build/Src/libCZI'
+# libczi cloned as submodule
+include_libCZI = os.path.join('.', 'libCZI', 'Src')
+lib_libCZI = os.path.join('.', 'libCZI', 'build', 'Src', 'libCZI')
 
 # platform specific compiler options
 extra_compile_args = sysconfig.get_config_var('CFLAGS').split()
@@ -37,6 +36,19 @@ extra_link_args = sysconfig.get_config_var('LDFLAGS').split()
 extra_link_args += extra_compile_args
 
 sources = ['_pylibczi.cpp']
+
+
+def build_libCZI():
+    env = os.environ.copy()
+    cmake_args = r"'-GCodeBlocks - Unix Makefiles' -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_INSTALL_PREFIX:PATH=/usr/local'"
+    build_args = ''
+    build_temp = os.path.join('.','libCZI','build')
+    if not os.path.exists(build_temp):
+        os.makedirs(build_temp)
+    subprocess.check_call(['cmake', '..'] + cmake_args, cwd=build_temp, env=env)
+    subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=build_temp)
+build_libCZI()
+
 
 module1 = Extension('_pylibczi',
                     define_macros = [('MAJOR_VERSION', '0'),
