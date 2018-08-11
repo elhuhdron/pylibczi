@@ -30,6 +30,7 @@ platform_ = platform.system()
 if platform_ == 'Linux':
     #os.environ["CC"] = "g++-6"; os.environ["CXX"] = "g++-6"
     extra_compile_args += ["-std=c++11", "-Wall", "-O3"]
+    extra_compile_args += ["-static-libstdc++", "-static-libgcc", "-static"]
     extra_link_args += ["-Wl,--no-undefined"]
 elif platform_ == 'Darwin':
     mac_ver = platform.mac_ver()[0]
