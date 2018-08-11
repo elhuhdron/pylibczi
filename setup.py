@@ -25,27 +25,27 @@ build_libCZI()
 
 # platform specific compiler options
 extra_compile_args = sysconfig.get_config_var('CFLAGS').split()
+extra_link_args = sysconfig.get_config_var('LDFLAGS').split()
 platform_ = platform.system()
 if platform_ == 'Linux':
     #os.environ["CC"] = "g++-6"; os.environ["CXX"] = "g++-6"
     extra_compile_args += ["-std=c++11", "-Wall", "-O3"]
+    extra_link_args += ["-Wl,--no-undefined"]
 elif platform_ == 'Darwin':
     mac_ver = platform.mac_ver()[0]
     extra_compile_args += ["-std=c++11", "-Wall", "-O3", "-stdlib=libc++", "-mmacosx-version-min="+mac_ver]
 elif platform_ == 'Windows':
     assert(False) # xxx - not tested on windows
-
-extra_link_args = sysconfig.get_config_var('LDFLAGS').split()
 extra_link_args += extra_compile_args
 
-# second answer at
-# https://stackoverflow.com/questions/4597228/how-to-statically-link-a-library-when-compiling-a-python-module-extension
 
 # libczi cloned as submodule
 include_libCZI = os.path.join('.', 'libCZI', 'Src')
 lib_libCZI = os.path.join('.', 'libCZI', 'build', 'Src', 'libCZI')
 lib_JxrDecode = os.path.join('.', 'libCZI', 'build', 'Src', 'JxrDecode')
 
+# second answer at
+# https://stackoverflow.com/questions/4597228/how-to-statically-link-a-library-when-compiling-a-python-module-extension
 static_libraries = ['libCZIStatic', 'JxrDecodeStatic']
 static_lib_dirs = [lib_libCZI, lib_JxrDecode]
 libraries = []
