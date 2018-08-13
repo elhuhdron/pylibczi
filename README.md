@@ -11,7 +11,7 @@ cmake --build .
 sudo cp Src/libCZI/liblibCZI.so /usr/local/lib
 ```
 
-[Documentation](https://pylibczi.readthedocs.io/en/latest/index.html) is available on readthedocs.
+pylibczi [documentation](https://pylibczi.readthedocs.io/en/latest/index.html) is available on readthedocs.
 
 For example usage, see [`sample.py`](sample.py)
 
