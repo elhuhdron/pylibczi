@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 from setuptools import setup, Extension
-import os
+import sys, os
 #import glob
 import numpy
 import sysconfig
@@ -34,12 +34,15 @@ def build_libCZI():
     env = os.environ.copy()
     cmake_args = ['-DCMAKE_BUILD_TYPE:STRING=Release']
     build_args = []
-    build_temp = os.path.join('.','libCZI','build')
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    libczi_dir = os.path.join(script_dir, 'libCZI')
+    build_temp = os.path.join(libczi_dir,'build')
     if not os.path.exists(build_temp):
         os.makedirs(build_temp)
     try:
-        subprocess.check_call(['cmake', '..'] + cmake_args, cwd=build_temp, env=env)
-        subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=build_temp)
+        cmake_exe = os.path.join(os.path.dirname(sys.executable), 'cmake')
+        subprocess.check_call([cmake_exe, libczi_dir] + cmake_args, cwd=build_temp, env=env)
+        subprocess.check_call([cmake_exe, '--build', '.'] + build_args, cwd=build_temp)
     except subprocess.CalledProcessError as e:
         print(e.output)
         raise
