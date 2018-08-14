@@ -10,30 +10,28 @@ Development requirements are those required for libCZI: libpng, zlib
 
 Clone the repository including submodules with `--recurse-submodules`
 
+python (and pip) install steps maybe require admin privileges (sudo) depending on where python is installed on your system.
+
 Install the python requirements:
 ```
 pip install -r dev-requirements.txt
 pip install -r requirements.txt
 ```
 
-[libCZI](https://github.com/zeiss-microscopy/libCZI) needs to be built and installed in a system path first, for example in Linux:
-```
-cd libCZI
-mkdir build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE:STRING=Release
-cmake --build .
-sudo cp Src/libCZI/liblibCZI.so /usr/local/lib
-```
-
-Next build and install using `setup.py`. This step could require admin privileges (sudo) depending on where python libraries are installed on your system.
+Next build and install using `setup.py`. 
 ```
 python setup.py install
 ```
 
+libCZI is automatically built by `setup.py`, but the binary needs to be copied to a system path, for example in Linux:
+```
+sudo cp libCZI/build/Src/libCZI/liblibCZI.so /usr/local/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+```
+
 ## Usage
 
-For example usage, see [`sample.py`](sample.py)
+For example usage, see [`sample.py`](sample.py). Replace `test.czi` with your own CZI file containing scenes.
 
 ## Documentation
 
