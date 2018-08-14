@@ -3,15 +3,18 @@ Python module to expose [libCZI](https://github.com/zeiss-microscopy/libCZI) fun
 
 ## Requirements
 
-Install the python and build requirements with:
-```
-pip install -r dev-requirements.txt
-pip install -r requirements.txt
-```
+libCZI requires a c++11 compatible compiler.
+Development requirements are those required for libCZI: libpng, zlib
 
 ## Installation
 
 Clone the repository including submodules with `--recurse-submodules`
+
+Install the python requirements:
+```
+pip install -r dev-requirements.txt
+pip install -r requirements.txt
+```
 
 [libCZI](https://github.com/zeiss-microscopy/libCZI) needs to be built and installed in a system path first, for example in Linux:
 ```
