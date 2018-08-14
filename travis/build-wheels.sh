@@ -2,7 +2,7 @@
 set -e -x
 
 # Install a system package required by our library
-#yum install -y freetype-devel libpng-devel pkg-config
+yum install -y libpng-devel zlib-devel
 
 # Compile wheels
 for PYBIN in /opt/python/*/bin; do
