@@ -1,6 +1,14 @@
 # pylibczi
 Python module to expose [libCZI](https://github.com/zeiss-microscopy/libCZI) functionality for reading (subset of) Zeiss CZI files and meta-data.
 
+## Requirements
+
+Install the python and build requirements with:
+```
+pip install -r dev-requirements.txt
+pip install -r requirements.txt
+```
+
 ## Installation
 
 Clone the repository including submodules with `--recurse-submodules`
