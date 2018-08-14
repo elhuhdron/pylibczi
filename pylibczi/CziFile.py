@@ -31,7 +31,12 @@ from lxml import etree as etree
 class CziFile(object):
     """Zeiss CZI file object.
 
-    Parent class for pylibczi.
+      Args:
+        |  czi_filename (str): Filename of czifile to access.
+
+      Kwargs:
+        |  metafile_out (str): Filename of xml file to optionally export czi meta data to.
+        |  verbose (bool): Print information and times during czi file access.
 
     .. note::
 
@@ -58,16 +63,6 @@ class CziFile(object):
         czilib = czifile
         
     def __init__(self, czi_filename, metafile_out='', verbose=False):
-        """Initialize a czifile class.
-
-        Args:
-           czi_filename (str): Filename of czifile to access.
-
-        Kwargs:
-           metafile_out (str): Filename of xml file to optionally export czi meta data to.
-           verbose (bool): Print information and times during czi file access.
-           
-        """
         self.czi_filename = czi_filename
         self.metafile_out = metafile_out
 

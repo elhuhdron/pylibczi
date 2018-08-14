@@ -47,6 +47,16 @@ class CziScene(CziFile):
 
     Access functions allow for reading of czi metadata to extract information for a particular scene.
 
+    Args:
+      |  czi_filename (str): Filename of czifile to access scene information in.
+
+    Kwargs:
+      |  scene (int): The scene to load in czifile (starting at 1).
+      |  ribbon (int): The ribbon to crop to (starting at 1). Negative value disables the ribbon cropping.
+      |  metafile_out (str): Filename of xml file to export czi meta data to.
+      |  tifffile_out (str): Filename of tiff file to export czi scene image to.
+      |  verbose (bool): Print information and times during czi file access.
+
     .. note::
 
        Utilizes compiled wrapper to libCZI for accessing the CZI file.
@@ -70,19 +80,6 @@ class CziScene(CziFile):
         }
     
     def __init__(self, czi_filename, scene=1, ribbon=0, metafile_out='', tifffile_out='', verbose=False):
-        """Initialize a CziScene class.
-
-        Args:
-           czi_filename (str): Filename of czifile to access scene information in.
-
-        Kwargs:
-           scene (int): The scene to load in czifile (starting at 1).
-           ribbon (int): The ribbon to crop to (starting at 1). Negative value disables the ribbon cropping.
-           metafile_out (str): Filename of xml file to export czi meta data to.
-           tifffile_out (str): Filename of tiff file to export czi scene image to.
-           verbose (bool): Print information and times during czi file access.
-           
-        """
         CziFile.__init__(self, czi_filename, metafile_out=metafile_out)
         self.scene, self.ribbon = scene-1, ribbon-1
         self.tifffile_out = tifffile_out
@@ -315,7 +312,7 @@ class CziScene(CziFile):
         Kwargs:
            
         Attributes Modified:
-            img (m,n ndarray): The loaded image data with data type matching that of the image.
+          |  img (m,n ndarray): The loaded image data with data type matching that of the image.
            
         """
         if not self.meta_loaded: self.read_scene_meta()
@@ -355,11 +352,11 @@ class CziScene(CziFile):
         """Access function for returning image and scene information.
             
         Returns:
-            (m,n ndarray):  The scene image.
-            (list of n,2 ndarray):  List of polygons defining slices in pixels.
-            (list of n,2 ndarray):  List of polygons defining ROIs in pixels.
-            (2, array):  Top-left coordinates of the polygon bounding box in pixels.
-            (2, array):  Size of the polygon bounding box in pixels.
+          |  (m,n ndarray):  The scene image.
+          |  (list of n,2 ndarray):  List of polygons defining slices in pixels.
+          |  (list of n,2 ndarray):  List of polygons defining ROIs in pixels.
+          |  (2, array):  Top-left coordinates of the polygon bounding box in pixels.
+          |  (2, array):  Size of the polygon bounding box in pixels.
            
         .. note::
             
@@ -373,10 +370,10 @@ class CziScene(CziFile):
         """Plot scene data using matplotlib.
 
         Kwargs:
-           figno (int): Figure number to use.
-           doplots_ds (int): Downsampling reduce factor before plotting.
-           interp_string (str): Interpolation string for matplotlib imshow.
-           show (bool): Whether to show images or return immediately.
+          |  figno (int): Figure number to use.
+          |  doplots_ds (int): Downsampling reduce factor before plotting.
+          |  interp_string (str): Interpolation string for matplotlib imshow.
+          |  show (bool): Whether to show images or return immediately.
            
         """
         if not self.scene_loaded: self.read_scene_image()
@@ -412,8 +409,8 @@ class CziScene(CziFile):
         """Export scene image to tiff file.
 
         Kwargs:
-           save_tiff_ds (int): Downsampling reduce factor before exporting.
-           fn (str): Filename of tiff to export (default to filename provided in init)
+          |  save_tiff_ds (int): Downsampling reduce factor before exporting.
+          |  fn (str): Filename of tiff to export (default to filename provided in init)
            
         """
         if fn is None: fn = self.tifffile_out
@@ -431,7 +428,7 @@ class CziScene(CziFile):
         """Classmethod to create a CziScene object from args (argparse).
 
         Kwargs:
-           args (argparse.Namespace): As returned by parse_args()
+          |  args (argparse.Namespace): As returned by parse_args()
            
         """
         ret = cls(args.czi_filename[0], scene=args.scene[0], metafile_out=args.metafile_out[0], 
