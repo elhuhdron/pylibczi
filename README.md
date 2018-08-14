@@ -26,7 +26,7 @@ cmake --build .
 sudo cp Src/libCZI/liblibCZI.so /usr/local/lib
 ```
 
-Next build and install using setup.py:
+Next build and install using `setup.py`. This step could require admin privileges (sudo) depending on where python libraries are installed on your system.
 ```
 python setup.py install
 ```
