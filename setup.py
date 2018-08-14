@@ -113,13 +113,13 @@ module1 = Extension('_pylibczi',
 #files = glob.glob(os.path.join(lib_libCZI,'*.so'))
 
 setup (name = 'pylibczi',
-       version = '0.112',
-       description = 'Python wrapper for libCZI',
+       version = '0.113',
+       description = 'Python module utilizing libCZI for reading Zeiss CZI files.',
        author = 'Paul Watkins',
        author_email = 'pwatkins@gmail.com',
-       url = '',
+       url = 'https://github.com/elhuhdron/pylibczi',
        long_description = '''
-Expose simple read image and meta data for Zeiss czifiles.
+Python module to expose libCZI functionality for reading (subset of) Zeiss CZI files and meta-data.
 ''',
        ext_modules = [module1],
        packages = ['pylibczi'],

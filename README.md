@@ -8,7 +8,7 @@ Development requirements are those required for libCZI: libpng, zlib
 
 ## Installation
 
-Clone the repository including submodules with `--recurse-submodules`
+Clone the repository including submodules (`--recurse-submodules`).
 
 python (and pip) install steps maybe require admin privileges (sudo) depending on where python is installed on your system.
 
