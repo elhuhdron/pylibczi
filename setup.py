@@ -20,6 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# to specify compiler from command line:
+# CC=gcc-6 CXX=g++-6 python setup.py build
+
 from setuptools import setup, Extension
 import sys, os
 #import glob
@@ -28,15 +31,36 @@ import sysconfig
 import platform
 import subprocess
 
+# several platform specifc build options
+platform_ = platform.system()
 
-# this is just for the build, user still needs to install the library somewhere on their own.
+# libczi cloned as submodule, get paths to library and build locations.
+script_dir = os.path.dirname(os.path.abspath(__file__))
+libczi_dir = os.path.join(script_dir, 'libCZI')
+build_temp = os.path.join(libczi_dir,'build')
+include_libCZI = os.path.join(libczi_dir, 'Src')
+lib_libCZI = os.path.join(build_temp, 'Src', 'libCZI')
+lib_JxrDecode = os.path.join(build_temp, 'Src', 'JxrDecode')
+
+def append_if_not_in_file(fn, str_):
+    with open(fn, 'r+') as file:
+        for line in file:
+            if str_ in line:
+                break
+        else:
+            file.write('\n' + str_)
+
+# this is just for the build, user still needs to install the library somewhere on their own (or static build).
 def build_libCZI():
+    if platform_ == 'Linux':
+        append_if_not_in_file(os.path.join(include_libCZI, 'libCZI', 'CMakeLists.txt'),
+                              'target_link_libraries (libCZIStatic -static-libstdc++ -Bstatic -lc)')
+        append_if_not_in_file(os.path.join(include_libCZI, 'JxrDecode', 'CMakeLists.txt'),
+                              'target_link_libraries (JxrDecodeStatic -static-libstdc++ -Bstatic -lc)')
+    
     env = os.environ.copy()
     cmake_args = ['-DCMAKE_BUILD_TYPE:STRING=Release']
     build_args = []
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    libczi_dir = os.path.join(script_dir, 'libCZI')
-    build_temp = os.path.join(libczi_dir,'build')
     if not os.path.exists(build_temp):
         os.makedirs(build_temp)
     try:
@@ -49,16 +73,20 @@ def build_libCZI():
 build_libCZI()
 
 
+# xxx - so far this was only needed for manylinux, expose as option to setup.py build somehow?
+build_static = False
+
 # platform specific compiler options
 extra_compile_args = sysconfig.get_config_var('CFLAGS').split()
 extra_link_args = sysconfig.get_config_var('LDFLAGS').split()
 extra_compile_args += ["-std=c++11", "-Wall", "-O3"]
-platform_ = platform.system()
 if platform_ == 'Linux':
-    #os.environ["CC"] = "g++-6"; os.environ["CXX"] = "g++-6"
+    build_static = True
     extra_compile_args += ["-fPIC"]
-    #extra_compile_args += ["-static", "-static-libgcc", "-static-libstdc++"]
-    #extra_link_args += ["-Wl,--no-undefined"]
+    if build_static:
+        os.environ["LDSHARED"] = os.environ["CXX"] # need to link with g++ linker for static libstdc++ to work
+        extra_link_args += ['-static-libstdc++', '-Bstatic -lc', '-shared']
+        extra_link_args += ["-Wl,--no-undefined"]
 elif platform_ == 'Darwin':
     mac_ver = platform.mac_ver()[0]
     extra_compile_args += ["-stdlib=libc++", "-mmacosx-version-min="+mac_ver]
@@ -66,30 +94,27 @@ elif platform_ == 'Windows':
     assert(False) # xxx - not tested on windows
 extra_link_args += extra_compile_args
 
-
-# libczi cloned as submodule
-include_libCZI = os.path.join('.', 'libCZI', 'Src')
-lib_libCZI = os.path.join('.', 'libCZI', 'build', 'Src', 'libCZI')
-lib_JxrDecode = os.path.join('.', 'libCZI', 'build', 'Src', 'JxrDecode')
 include_dirs = [numpy.get_include(), include_libCZI]
+
+static_libraries = []
+static_lib_dirs = []
+libraries = []
+library_dirs = []
+extra_objects = []
+if build_static:
+    static_libraries += ['libCZIStatic', 'JxrDecodeStatic']
+    static_lib_dirs += [lib_libCZI, lib_JxrDecode]
+else:
+    libraries += ['libCZI']
+    library_dirs += [lib_libCZI]
 
 # second answer at
 # https://stackoverflow.com/questions/4597228/how-to-statically-link-a-library-when-compiling-a-python-module-extension
-#static_libraries = ['libCZIStatic', 'JxrDecodeStatic']
-#static_lib_dirs = [lib_libCZI, lib_JxrDecode]
-#libraries = []
-#library_dirs = []
-static_libraries = []
-static_lib_dirs = []
-libraries = ['libCZI']
-library_dirs = [lib_libCZI]
-
 if platform_ == 'Windows':
     libraries.extend(static_libraries)
     library_dirs.extend(static_lib_dirs)
-    extra_objects = []
 else: # POSIX
-    extra_objects = ['{}/lib{}.a'.format(d, l) for d,l in zip(static_lib_dirs, static_libraries)]
+    extra_objects += ['{}/lib{}.a'.format(d, l) for d,l in zip(static_lib_dirs, static_libraries)]
     include_dirs.append('/usr/local/include')
     library_dirs.append('/usr/local/lib')
 
@@ -105,11 +130,12 @@ module1 = Extension('_pylibczi',
                     extra_compile_args=extra_compile_args,
                     extra_link_args=extra_link_args,
                     language='c++11',
-                    #extra_objects=extra_objects,
+                    extra_objects=extra_objects,
                     )
 
+
+# xxx - keeping here for reference, this copy works, but better is to link statically
 # install the libCZI library into the module directory
-# xxx - this does not work, user needs to install libCZI to system location on their own.
 #files = glob.glob(os.path.join(lib_libCZI,'*.so'))
 
 setup (name = 'pylibczi',
@@ -123,6 +149,6 @@ Python module to expose libCZI functionality for reading (subset of) Zeiss CZI f
 ''',
        ext_modules = [module1],
        packages = ['pylibczi'],
-       zip_safe = True,
+       #zip_safe = True,
        #data_files = files,
        )
