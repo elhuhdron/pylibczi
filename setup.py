@@ -20,9 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# to specify compiler from command line:
-# CC=gcc-6 CXX=g++-6 python setup.py build
-
 from setuptools import setup, Extension
 import sys, os
 #import glob
@@ -50,8 +47,20 @@ def append_if_not_in_file(fn, str_):
         else:
             file.write('\n' + str_)
 
-# this is just for the build, user still needs to install the library somewhere on their own (or static build).
+def prepend_if_not_in_file(fn, str_):
+    with open(fn, 'r') as original: 
+        data = original.read()
+    for line in iter(data.splitlines()):
+        if str_ in line:
+            break
+    else:
+        with open(fn, 'w') as modified: 
+            modified.write(str_ + '\n' + data)
+
 def build_libCZI():
+    # xxx - this is a bug for building in linux, report to libCZI issues
+    prepend_if_not_in_file(os.path.join(include_libCZI, 'libCZI', 'stdAllocator.cpp'),
+                            '#include <cstdlib>  // for aligned_alloc')
     if platform_ == 'Linux':
         append_if_not_in_file(os.path.join(include_libCZI, 'libCZI', 'CMakeLists.txt'),
                               'target_link_libraries (libCZIStatic -static-libstdc++ -Bstatic -lc)')
@@ -84,7 +93,8 @@ if platform_ == 'Linux':
     build_static = True
     extra_compile_args += ["-fPIC"]
     if build_static:
-        os.environ["LDSHARED"] = os.environ["CXX"] # need to link with g++ linker for static libstdc++ to work
+        # need to link with g++ linker for static libstdc++ to work
+        os.environ["LDSHARED"] = os.environ["CXX"] if 'CXX' in os.environ else 'g++'
         extra_link_args += ['-static-libstdc++', '-Bstatic -lc', '-shared']
         extra_link_args += ["-Wl,--no-undefined"]
 elif platform_ == 'Darwin':
@@ -134,7 +144,7 @@ module1 = Extension('_pylibczi',
                     )
 
 
-# xxx - keeping here for reference, this copy works, but better is to link statically
+# xxx - keeping here for reference, this copy works, but decided to link statically
 # install the libCZI library into the module directory
 #files = glob.glob(os.path.join(lib_libCZI,'*.so'))
 
