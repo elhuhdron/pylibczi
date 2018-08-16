@@ -56,15 +56,13 @@ def build_libCZI():
 build_libCZI()
 
 
-# xxx - so far this was only needed for manylinux, expose as option to setup.py build somehow?
-build_static = False
+build_static = True
 
 # platform specific compiler / linker options
 extra_compile_args = sysconfig.get_config_var('CFLAGS').split()
 extra_link_args = sysconfig.get_config_var('LDFLAGS').split()
 extra_compile_args += ["-std=c++11", "-Wall", "-O3"]
 if platform_ == 'Linux':
-    build_static = True
     extra_compile_args += ["-fPIC"]
     if build_static:
         # need to link with g++ linker for static libstdc++ to work
@@ -72,7 +70,7 @@ if platform_ == 'Linux':
         extra_link_args += ['-static-libstdc++', '-shared']
         #extra_link_args += ["-Wl,--no-undefined"] # will not work with manylinux
 elif platform_ == 'Darwin':
-    mac_ver = platform.mac_ver()[0]
+    mac_ver = platform.mac_ver()[0] # xxx - how to know min mac version?
     extra_compile_args += ["-stdlib=libc++", "-mmacosx-version-min="+mac_ver]
 elif platform_ == 'Windows':
     assert(False) # xxx - not tested on windows
