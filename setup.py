@@ -59,7 +59,7 @@ build_libCZI()
 # xxx - so far this was only needed for manylinux, expose as option to setup.py build somehow?
 build_static = False
 
-# platform specific compiler options
+# platform specific compiler / linker options
 extra_compile_args = sysconfig.get_config_var('CFLAGS').split()
 extra_link_args = sysconfig.get_config_var('LDFLAGS').split()
 extra_compile_args += ["-std=c++11", "-Wall", "-O3"]
@@ -69,8 +69,8 @@ if platform_ == 'Linux':
     if build_static:
         # need to link with g++ linker for static libstdc++ to work
         os.environ["LDSHARED"] = os.environ["CXX"] if 'CXX' in os.environ else 'g++'
-        extra_link_args += ['-static-libstdc++', '-Bstatic -lc', '-shared']
-        extra_link_args += ["-Wl,--no-undefined"]
+        extra_link_args += ['-static-libstdc++', '-shared']
+        #extra_link_args += ["-Wl,--no-undefined"] # will not work with manylinux
 elif platform_ == 'Darwin':
     mac_ver = platform.mac_ver()[0]
     extra_compile_args += ["-stdlib=libc++", "-mmacosx-version-min="+mac_ver]
@@ -123,7 +123,7 @@ module1 = Extension('_pylibczi',
 #files = glob.glob(os.path.join(lib_libCZI,'*.so'))
 
 setup (name = 'pylibczi',
-       version = '0.113',
+       version=open("pylibczi/_version.py").readlines()[-1].split()[-1].strip("\"'"),
        description = 'Python module utilizing libCZI for reading Zeiss CZI files.',
        author = 'Paul Watkins',
        author_email = 'pwatkins@gmail.com',
@@ -133,6 +133,5 @@ Python module to expose libCZI functionality for reading (subset of) Zeiss CZI f
 ''',
        ext_modules = [module1],
        packages = ['pylibczi'],
-       #zip_safe = True,
        #data_files = files,
        )
