@@ -120,8 +120,8 @@ module1 = Extension('_pylibczi',
 # install the libCZI library into the module directory
 #files = glob.glob(os.path.join(lib_libCZI,'*.so'))
 
-# xxx - tifffile doesn't play nice here for some reason
-install_requires = ['numpy', 'scipy', 'lxml', 'scikit-image', 'matplotlib']
+# xxx - not sure I understand what this is still
+install_requires = []
 
 setup (name = 'pylibczi',
        version=open("pylibczi/_version.py").readlines()[-1].split()[-1].strip("\"'"),
@@ -134,6 +134,6 @@ Python module to expose libCZI functionality for reading (subset of) Zeiss CZI f
 ''',
        ext_modules = [module1],
        packages = ['pylibczi'],
-       install_requires = install_requires,
+       #install_requires = install_requires,
        #data_files = files,
        )
