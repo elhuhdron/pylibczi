@@ -122,7 +122,8 @@ module1 = Extension('_pylibczi',
 # install the libCZI library into the module directory
 #files = glob.glob(os.path.join(lib_libCZI,'*.so'))
 
-install_requires = ['numpy', 'scipy', 'lxml', 'scikit-image', 'matplotlib', 'tifffile']
+# xxx - tifffile doesn't play nice here for some reason
+install_requires = ['numpy', 'scipy', 'lxml', 'scikit-image', 'matplotlib']
 
 setup (name = 'pylibczi',
        version=open("pylibczi/_version.py").readlines()[-1].split()[-1].strip("\"'"),
