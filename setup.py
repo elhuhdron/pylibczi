@@ -39,34 +39,8 @@ include_libCZI = os.path.join(libczi_dir, 'Src')
 lib_libCZI = os.path.join(build_temp, 'Src', 'libCZI')
 lib_JxrDecode = os.path.join(build_temp, 'Src', 'JxrDecode')
 
-def append_if_not_in_file(fn, str_):
-    with open(fn, 'r+') as file:
-        for line in file:
-            if str_ in line:
-                break
-        else:
-            file.write('\n' + str_)
-
-def prepend_if_not_in_file(fn, str_):
-    with open(fn, 'r') as original: 
-        data = original.read()
-    for line in iter(data.splitlines()):
-        if str_ in line:
-            break
-    else:
-        with open(fn, 'w') as modified: 
-            modified.write(str_ + '\n' + data)
 
 def build_libCZI():
-    # xxx - this is a bug for building in linux, report to libCZI issues
-    prepend_if_not_in_file(os.path.join(include_libCZI, 'libCZI', 'stdAllocator.cpp'),
-                            '#include <cstdlib>  // for aligned_alloc')
-    if platform_ == 'Linux':
-        append_if_not_in_file(os.path.join(include_libCZI, 'libCZI', 'CMakeLists.txt'),
-                              'target_link_libraries (libCZIStatic -static-libstdc++ -Bstatic -lc)')
-        append_if_not_in_file(os.path.join(include_libCZI, 'JxrDecode', 'CMakeLists.txt'),
-                              'target_link_libraries (JxrDecodeStatic -static-libstdc++ -Bstatic -lc)')
-    
     env = os.environ.copy()
     cmake_args = ['-DCMAKE_BUILD_TYPE:STRING=Release']
     build_args = []
