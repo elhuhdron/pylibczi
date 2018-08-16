@@ -5,8 +5,9 @@ set -e -x
 yum install -y libpng-devel zlib-devel
 
 # Install newer devtools that work on manylinux
-GCCAR=gcc-7.3-centos5-x86-64.tar.bz2
-curl -o ${GCCAR} -L https://github.com/Noctem/pogeo-toolchain/releases/download/v1.5/${GCCAR}
+GCCLOC=https://github.com/squeaky-pl/centos-devtools/releases/download/6.3
+GCCAR=gcc-6.3.0-binutils-2.27-x86_64.tar.bz2
+curl -o ${GCCAR} -L ${GCCLOC}/${GCCAR}
 tar xvjf ${GCCAR}
 export CC=/toolchain/bin/gcc
 export CXX=/toolchain/bin/g++
