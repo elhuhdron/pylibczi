@@ -135,10 +135,10 @@ else: # POSIX
     library_dirs.append('/usr/local/lib')
 
 sources = ['_pylibczi.cpp']
+version = open("pylibczi/_version.py").readlines()[-1].split()[-1].strip("\"'")
 
 module1 = Extension('_pylibczi',
-                    define_macros = [('MAJOR_VERSION', '0'),
-                                     ('MINOR_VERSION', '1')],
+                    define_macros = [('PYLIBCZI_VERSION', version),],
                     include_dirs = include_dirs,
                     libraries = libraries,
                     library_dirs = library_dirs,
@@ -157,7 +157,7 @@ if not build_static:
     data_files += glob.glob(os.path.join(lib_libCZI,'*.dll'))
 
 setup (name = 'pylibczi',
-       version=open("pylibczi/_version.py").readlines()[-1].split()[-1].strip("\"'"),
+       version=version,
        description = 'Python module utilizing libCZI for reading Zeiss CZI files.',
        author = 'Paul Watkins',
        author_email = 'pwatkins@gmail.com',
