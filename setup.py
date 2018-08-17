@@ -22,7 +22,7 @@
 
 from setuptools import setup, Extension
 import sys, os
-#import glob
+import glob
 import numpy
 import sysconfig
 import platform
@@ -30,6 +30,10 @@ import subprocess
 
 # several platform specifc build options
 platform_ = platform.system()
+architecture = platform.architecture()
+
+# to statically link libCZI
+build_static = (platform_ != 'Windows')
 
 # libczi cloned as submodule, get paths to library and build locations.
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -38,43 +42,73 @@ build_temp = os.path.join(libczi_dir,'build')
 include_libCZI = os.path.join(libczi_dir, 'Src')
 lib_libCZI = os.path.join(build_temp, 'Src', 'libCZI')
 lib_JxrDecode = os.path.join(build_temp, 'Src', 'JxrDecode')
+if platform_ == 'Windows':
+    if build_static:
+        # xxx - does not work, not sure why
+        #   copy libCZI dll using data_files instead 
+        libCZI_win_release = 'static\ Release'
+    else:
+        libCZI_win_release = 'Release'
+    win_arch = 'x64' if architecture[0]=='64bit' else 'x86'
+    lib_libCZI = os.path.join(lib_libCZI, libCZI_win_release)
+    lib_JxrDecode = os.path.join(lib_JxrDecode, libCZI_win_release)
 
 
 def build_libCZI():
     env = os.environ.copy()
-    cmake_args = ['-DCMAKE_BUILD_TYPE:STRING=Release']
+    cmake_args = []
     build_args = []
+    if platform_ == 'Windows':
+        cmake_args += ['-DCMAKE_GENERATOR_PLATFORM=' + win_arch]
+        build_args += ['--config', libCZI_win_release]
+    else:
+        cmake_args += ['-DCMAKE_BUILD_TYPE:STRING=Release']
     if not os.path.exists(build_temp):
         os.makedirs(build_temp)
+    def run_cmake(cmake_exe):
+        config_cmd_list = [cmake_exe, libczi_dir] + cmake_args
+        build_cmd_list = [cmake_exe, '--build', '.'] + build_args
+        if platform_ == 'Windows':
+            print(subprocess.list2cmdline(config_cmd_list))
+            print(subprocess.list2cmdline(build_cmd_list))
+        subprocess.check_call(config_cmd_list, cwd=build_temp, env=env)
+        subprocess.check_call(build_cmd_list, cwd=build_temp, env=env)
     try:
-        cmake_exe = os.path.join(os.path.dirname(sys.executable), 'cmake')
-        subprocess.check_call([cmake_exe, libczi_dir] + cmake_args, cwd=build_temp, env=env)
-        subprocess.check_call([cmake_exe, '--build', '.'] + build_args, cwd=build_temp)
-    except subprocess.CalledProcessError as e:
-        print(e.output)
-        raise
+        # try to use the pip installed cmake first
+        run_cmake(os.path.join(os.path.dirname(sys.executable), 'cmake'))
+    except OSError:
+        # xxx - anaconda windows pip install cmake goes into a Scripts dir
+        #   better option here?
+        run_cmake('cmake')
 build_libCZI()
 
 
-build_static = True
+def safe_get_env_var_list(var):
+    vlist = sysconfig.get_config_var(var)
+    return ([] if vlist is None else vlist.split())
 
 # platform specific compiler / linker options
-extra_compile_args = sysconfig.get_config_var('CFLAGS').split()
-extra_link_args = sysconfig.get_config_var('LDFLAGS').split()
-extra_compile_args += ["-std=c++11", "-Wall", "-O3"]
-if platform_ == 'Linux':
-    extra_compile_args += ["-fPIC"]
-    if build_static:
-        # need to link with g++ linker for static libstdc++ to work
-        os.environ["LDSHARED"] = os.environ["CXX"] if 'CXX' in os.environ else 'g++'
-        extra_link_args += ['-static-libstdc++', '-shared']
-        #extra_link_args += ["-Wl,--no-undefined"] # will not work with manylinux
-elif platform_ == 'Darwin':
-    mac_ver = platform.mac_ver()[0] # xxx - how to know min mac version?
-    extra_compile_args += ["-stdlib=libc++", "-mmacosx-version-min="+mac_ver]
-elif platform_ == 'Windows':
-    assert(False) # xxx - not tested on windows
-extra_link_args += extra_compile_args
+extra_compile_args = safe_get_env_var_list('CFLAGS')
+extra_link_args = safe_get_env_var_list('LDFLAGS')
+if platform_ == 'Windows':
+    extra_compile_args += safe_get_env_var_list('CL')
+    extra_compile_args += safe_get_env_var_list('_CL_')
+    extra_link_args += safe_get_env_var_list('LINK')
+    extra_link_args += safe_get_env_var_list('_LINK_')
+    extra_compile_args += ['/Ox']
+else:
+    extra_compile_args += ["-std=c++11", "-Wall", "-O3"]
+    if platform_ == 'Linux':
+        extra_compile_args += ["-fPIC"]
+        if build_static:
+            # need to link with g++ linker for static libstdc++ to work
+            os.environ["LDSHARED"] = os.environ["CXX"] if 'CXX' in os.environ else 'g++'
+            extra_link_args += ['-static-libstdc++', '-shared']
+            #extra_link_args += ["-Wl,--no-undefined"] # will not work with manylinux
+    elif platform_ == 'Darwin':
+        mac_ver = platform.mac_ver()[0] # xxx - how to know min mac version?
+        extra_compile_args += ["-stdlib=libc++", "-mmacosx-version-min="+mac_ver]
+    extra_link_args += extra_compile_args
 
 include_dirs = [numpy.get_include(), include_libCZI]
 
@@ -116,12 +150,11 @@ module1 = Extension('_pylibczi',
                     )
 
 
-# xxx - keeping here for reference, this copy works, but decided to link statically
-# install the libCZI library into the module directory
-#files = glob.glob(os.path.join(lib_libCZI,'*.so'))
-
-# xxx - not sure I understand what this is still
-install_requires = []
+data_files = []
+if not build_static:
+    data_files += glob.glob(os.path.join(lib_libCZI,'*.so'))
+    data_files += glob.glob(os.path.join(lib_libCZI,'*.dylib'))
+    data_files += glob.glob(os.path.join(lib_libCZI,'*.dll'))
 
 setup (name = 'pylibczi',
        version=open("pylibczi/_version.py").readlines()[-1].split()[-1].strip("\"'"),
@@ -134,6 +167,5 @@ Python module to expose libCZI functionality for reading (subset of) Zeiss CZI f
 ''',
        ext_modules = [module1],
        packages = ['pylibczi'],
-       #install_requires = install_requires,
-       #data_files = files,
+       data_files = data_files,
        )

@@ -9,6 +9,14 @@ The preferred installation method is using pip install to install binaries [host
 pip install pylibczi
 ```
 
+## Usage
+
+For example usage, see [`sample.py`](sample.py). Replace `test.czi` with your own CZI file containing scenes.
+
+## Documentation
+
+[Documentation](https://pylibczi.readthedocs.io/en/latest/index.html) is available on readthedocs.
+
 ## Build
 
 Use these steps to build and install pylibczi locally:
@@ -27,12 +35,4 @@ Use these steps to build and install pylibczi locally:
   python setup.py install
   ```
   * libCZI is automatically built as a submodule and linked statically to pylibczi.
-
-## Usage
-
-For example usage, see [`sample.py`](sample.py). Replace `test.czi` with your own CZI file containing scenes.
-
-## Documentation
-
-[Documentation](https://pylibczi.readthedocs.io/en/latest/index.html) is available on readthedocs.
 
