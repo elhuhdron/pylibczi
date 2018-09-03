@@ -4,3 +4,4 @@ lxml
 scikit-image
 matplotlib
 tifffile
+cmake

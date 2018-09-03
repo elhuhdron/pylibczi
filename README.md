@@ -4,9 +4,10 @@ Python module to expose [libCZI](https://github.com/zeiss-microscopy/libCZI) fun
 
 ## Installation
 
-The preferred installation method is using pip install to install binaries [hosted on](https://pypi.org/project/pylibczi/) PyPI:
+The preferred installation method is with `pip install`. This will intall the pylibczi python module and extension binaries ([hosted on PyPI](https://pypi.org/project/pylibczi/)) and also the dependency requirements:
 ```
 pip install pylibczi
+pip install -r requirements.txt
 ```
 
 ## Usage
@@ -27,7 +28,6 @@ Use these steps to build and install pylibczi locally:
   * Development requirements are those required for libCZI: **libpng**, **zlib**
   * Install the python requirements:
     ```
-    pip install -r dev-requirements.txt
     pip install -r requirements.txt
     ```
 * Build and install:
