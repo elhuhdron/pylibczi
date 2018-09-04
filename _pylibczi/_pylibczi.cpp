@@ -21,14 +21,9 @@
 #include "numpy/arrayobject.h"
 
 #include <iostream>
-//#include <assert.h>
 #include <vector>
 
-using namespace std;
-
 #include "inc_libCZI.h"
-
-using namespace libCZI;
 
 // https://stackoverflow.com/questions/3342726/c-print-out-enum-value-as-text
 std::ostream& operator<<(std::ostream& out, const libCZI::PixelType value){
@@ -130,7 +125,7 @@ PyMODINIT_FUNC PyInit__pylibczi(void)
 
 /* #### Helper prototypes ################################### */
 
-std::shared_ptr<ICZIReader> open_czireader_from_cfilename(char const *fn);
+std::shared_ptr<libCZI::ICZIReader> open_czireader_from_cfilename(char const *fn);
 PyArrayObject* copy_bitmap_to_numpy_array(std::shared_ptr<libCZI::IBitmapData> pBitmap);
 
 /* #### Extended modules #################################### */
@@ -197,6 +192,13 @@ static PyObject *cziread_allsubblocks(PyObject *self, PyObject *args) {
             (PyObject*) copy_bitmap_to_numpy_array(cziReader->ReadSubBlock(idx)->CreateBitmap()));
         // add the coordinates
         coords[2*cnt] = info.logicalRect.x; coords[2*cnt+1] = info.logicalRect.y;
+
+        //info.coordinate.EnumValidDimensions([](libCZI::DimensionIndex dim, int value)
+        //{
+        //    //valid_dims[(int) dim] = true;
+        //    cout << "Dimension  " << dim << " value " << value << endl;
+        //    return true;
+        //});
         
         cnt++;
         return true;
@@ -220,7 +222,7 @@ static PyObject *cziread_scene(PyObject *self, PyObject *args) {
         return NULL;
     }
     npy_int64 *ptr_scene_or_box = (npy_int64*) PyArray_DATA(scene_or_box);
-    bool use_scene; npy_int32 scene; npy_int32 rect[4];
+    bool use_scene; npy_int32 scene = -1; npy_int32 rect[4];
     if( size_scene_or_box == 1 ) {
         use_scene = true;
         scene = ptr_scene_or_box[0];
@@ -272,7 +274,7 @@ static PyObject *cziread_scene(PyObject *self, PyObject *args) {
         min_x = rect[0]; size_x = rect[2]; min_y = rect[1]; size_y = rect[3];
         max_x = min_x + size_x; max_y = min_y + size_y;
     }
-    //cout << "min x y " << min_x << " " << min_y << " max x y " << max_x << " " << max_y << endl;
+    //std::cout << "min x y " << min_x << " " << min_y << " max x y " << max_x << " " << max_y << std::endl;
     //for (auto it = valid_dims.begin(); it != valid_dims.end(); ++it) {
     //    if( *it ) {
     //        int index = std::distance(valid_dims.begin(), it);
@@ -342,7 +344,7 @@ PyArrayObject* copy_bitmap_to_numpy_array(std::shared_ptr<libCZI::IBitmapData> p
     return (PyArrayObject*) PyArray_SwapAxes(img,0,1);
 }
 
-std::shared_ptr<ICZIReader> open_czireader_from_cfilename(char const *fn) {
+std::shared_ptr<libCZI::ICZIReader> open_czireader_from_cfilename(char const *fn) {
     // open the czi file
     // https://msdn.microsoft.com/en-us/library/ms235631.aspx
     size_t newsize = strlen(fn) + 1;

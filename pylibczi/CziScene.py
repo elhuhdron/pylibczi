@@ -27,9 +27,6 @@ import tifffile
 import scipy.spatial.distance as scidist
 import skimage.measure as measure
 
-from matplotlib import pylab as pl
-import matplotlib.patches as patches
-
 # xxx - some better way to handle import if running from command line?
 try:
     from .CziFile import CziFile
@@ -366,10 +363,14 @@ class CziScene(CziFile):
         Kwargs:
           |  figno (int): Figure number to use.
           |  doplots_ds (int): Downsampling reduce factor before plotting.
+          |  reduce (func): Function to use for block-reduce downsampling.
           |  interp_string (str): Interpolation string for matplotlib imshow.
           |  show (bool): Whether to show images or return immediately.
            
         """
+        from matplotlib import pylab as pl
+        import matplotlib.patches as patches
+        
         if not self.scene_loaded: self.read_scene_image()
         
         if self.cziscene_verbose:
