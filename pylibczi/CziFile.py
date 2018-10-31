@@ -84,8 +84,7 @@ class CziFile(object):
         """Read image data from all subblocks and create single montaged image.
 
         Returns:
-          |  (m,n ndarray):  Montaged image from all subblocks.
-          |  (nimages, 2): Integer subscripts where subblocks were placed in montaged image.
+          |  (m,n,nchan ndarray):  Montaged image from all subblocks.
 
         """
 
