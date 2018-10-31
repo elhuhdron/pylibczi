@@ -39,7 +39,7 @@ lib_JxrDecode = os.path.join(build_temp, 'Src', 'JxrDecode')
 if platform_ == 'Windows':
     if build_static:
         # xxx - does not work, not sure why
-        #   copy libCZI dll using data_files instead 
+        #   copy libCZI dll using data_files instead
         libCZI_win_release = 'static\ Release'
     else:
         libCZI_win_release = 'Release'
@@ -162,4 +162,5 @@ Python module to expose libCZI functionality for reading (subset of) Zeiss CZI f
        ext_modules = [module1],
        packages = ['pylibczi'],
        data_files = data_files,
+       install_requires=['numpy', 'scipy', 'lxml', 'scikit-image', 'matplotlib', 'tifffile', 'cmake'],
        )
