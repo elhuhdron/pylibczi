@@ -2,6 +2,6 @@ numpy>=1.14.1
 scipy
 lxml
 scikit-image
-matplotlib
+matplotlib>=2.0.0
 tifffile
 cmake

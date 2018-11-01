@@ -162,5 +162,5 @@ Python module to expose libCZI functionality for reading (subset of) Zeiss CZI f
        ext_modules = [module1],
        packages = ['pylibczi'],
        data_files = data_files,
-       install_requires=['numpy', 'scipy', 'lxml', 'scikit-image', 'matplotlib', 'tifffile', 'cmake'],
+       install_requires=['scikit-image', 'matplotlib', 'tifffile', 'scipy', 'numpy', 'lxml', 'cmake'],
        )
