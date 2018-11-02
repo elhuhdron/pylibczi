@@ -19,7 +19,7 @@
 set -e -x
 
 # Install a system package required by our library
-yum install -y libpng-devel zlib-devel
+yum install -y atlas-devel libpng-devel zlib-devel
 
 # Install newer devtools that work on manylinux
 #GCCLOC=https://github.com/squeaky-pl/centos-devtools/releases/download/6.3
