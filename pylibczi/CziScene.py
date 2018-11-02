@@ -354,7 +354,7 @@ class CziScene(CziFile):
         if not self.scene_loaded: self.read_scene_image()
         return self.img, self.polygons_points, self.rois_points, self.box_corners_pix, self.box_sizes_pix
 
-    def plot_scene(self, figno=1, doplots_ds=8, reduce=np.mean, interp_string='nearest', show=True):
+    def plot_scene(self, figno=1, doplots_ds=1, reduce=np.mean, interp_string='nearest', show=True):
         """Plot scene data using matplotlib.
 
         Kwargs:

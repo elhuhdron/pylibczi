@@ -4,14 +4,18 @@ Python module to expose [libCZI](https://github.com/zeiss-microscopy/libCZI) fun
 
 ## Installation
 
-The preferred installation method is with `pip install`. This will intall the pylibczi python module and extension binaries ([hosted on PyPI](https://pypi.org/project/pylibczi/)):
+The preferred installation method is with `pip install`.
+This will intall the pylibczi python module and extension binaries ([hosted on PyPI](https://pypi.org/project/pylibczi/)):
 ```
 pip install pylibczi
 ```
 
 ## Usage
 
-For example usage, see [`sample.py`](sample.py). Replace `test.czi` with your own CZI file containing scenes.
+For example usage, see [`sample.py`](sample.py).
+In the first example, replace `test.czi` with your own CZI file containing scenes.
+In the second example, replace `test2.czi` with your own CZI file containing grayscale or BGR48 image data.
+The latter is a more generic reader for reading and assembling all subblocks.
 
 ## Documentation
 

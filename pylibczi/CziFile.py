@@ -115,7 +115,7 @@ class CziFile(object):
         return img
 
     @staticmethod
-    def plot_image(image, figno=1, doplots_ds=8, reduce=np.mean, interp_string='nearest', show=True):
+    def plot_image(image, figno=1, doplots_ds=1, reduce=np.mean, interp_string='nearest', show=True):
         """Generic image plot using matplotlib.
 
         Kwargs:
@@ -134,8 +134,9 @@ class CziFile(object):
             image = image / image.max()
             # all the zeiss color formats are bgr, not rgb
             image = image[:,:,[2,1,0]]
+            assert(doplots_ds==1) # block reduce on color images not implemented here
 
-        img_ds = measure.block_reduce(image, block_size=(doplots_ds, doplots_ds),
+        img_ds = measure.block_reduce(image, block_size=tuple([doplots_ds for x in range(image.ndim)]),
                                       func=reduce).astype(image.dtype) if doplots_ds > 1 else image
 
         pl.figure(figno)

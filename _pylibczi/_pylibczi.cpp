@@ -302,9 +302,8 @@ static PyObject *cziread_scene(PyObject *self, PyObject *args) {
 }
 
 PyArrayObject* copy_bitmap_to_numpy_array(std::shared_ptr<libCZI::IBitmapData> pBitmap) {
-    // allocate the matlab matrix to copy image into
+    // define numpy types/shapes and bytes per pixel depending on the zeiss bitmap pixel type.
     int numpy_type = NPY_UINT16; int pixel_size_bytes = 0; int channels = 1;
-    //cout << pBitmap->GetPixelType() << endl;
     switch( pBitmap->GetPixelType() ) {
         case libCZI::PixelType::Gray8:
             numpy_type = NPY_UINT8; pixel_size_bytes = 1; channels = 1;
@@ -321,7 +320,7 @@ PyArrayObject* copy_bitmap_to_numpy_array(std::shared_ptr<libCZI::IBitmapData> p
             return NULL;
     }
 
-    /* Create an m-by-n numpy ndarray. */
+    // allocate the numpy matrix to copy image into
     //cout << size_x << " " << size_y << endl;
     auto size = pBitmap->GetSize();
     int size_x = size.w, size_y = size.h;
