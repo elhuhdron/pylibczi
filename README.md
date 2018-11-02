@@ -32,6 +32,7 @@ Use these steps to build and install pylibczi locally:
   * Install the python requirements:
     ```
     pip install -r requirements.txt
+    pip install -r dev-requirements.txt
     ```
 * Build and install:
   ```
