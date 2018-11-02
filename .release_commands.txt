@@ -2,6 +2,7 @@
 # to create a conda env with particular version:
 #   conda create -n py37 python=3.7 anaconda
 #   pip install -r requirements.txt
+#   pip install -r dev-requirements.txt
 
 # activate desired python version:
 #   conda activate py37
