@@ -15,7 +15,9 @@
 # along with pylibczi.  If not, see <https://www.gnu.org/licenses/>.
 
 from setuptools import setup, Extension
-import sys, os
+from setuptools.command.build_ext import build_ext
+from distutils.command.clean import clean
+import sys, os, shutil
 import glob
 import numpy
 import sysconfig
@@ -74,7 +76,25 @@ def build_libCZI():
         # xxx - anaconda windows pip install cmake goes into a Scripts dir
         #   better option here?
         run_cmake('cmake')
-build_libCZI()
+
+
+class specialized_build_ext(build_ext):
+    """Subclass of build_ext subcommand to build libCZI.
+    """
+
+    def run(self, *args, **kwargs):
+        build_libCZI()
+        build_ext.run(self, *args, **kwargs)
+
+
+class specialized_clean(clean):
+    """Subclass of clean subcommand to clean libCZI.
+    """
+
+    def run(self, *args, **kwargs):
+        print('Remove libCZI build dir')
+        shutil.rmtree(build_temp, ignore_errors=True)
+        clean.run(self, *args, **kwargs)
 
 
 def safe_get_env_var_list(var):
@@ -162,5 +182,8 @@ Python module to expose libCZI functionality for reading (subset of) Zeiss CZI f
        ext_modules = [module1],
        packages = ['pylibczi'],
        data_files = data_files,
-       install_requires=['scikit-image', 'matplotlib', 'tifffile', 'scipy', 'numpy', 'lxml', 'cmake'],
+       install_requires=['scipy', 'numpy', 'lxml'],
+       cmdclass={'build_ext': specialized_build_ext,
+                 'clean': specialized_clean,
+                }
        )

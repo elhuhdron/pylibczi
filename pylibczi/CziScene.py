@@ -22,10 +22,7 @@ import numpy as np
 import argparse
 import time
 
-import tifffile
-
 import scipy.spatial.distance as scidist
-import skimage.measure as measure
 
 # xxx - some better way to handle import if running from command line?
 try:
@@ -370,6 +367,7 @@ class CziScene(CziFile):
         """
         from matplotlib import pylab as pl
         import matplotlib.patches as patches
+        import skimage.measure as measure
 
         if not self.scene_loaded: self.read_scene_image()
 
@@ -408,6 +406,9 @@ class CziScene(CziFile):
           |  fn (str): Filename of tiff to export (default to filename provided in init)
 
         """
+        import skimage.measure as measure
+        import tifffile
+
         if fn is None: fn = self.tifffile_out
         # figure out BIG tiff
         if self.cziscene_verbose:
