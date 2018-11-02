@@ -18,8 +18,8 @@
 
 set -e -x
 
-# Install a system package required by our library
-yum install -y atlas-devel libpng-devel zlib-devel
+# Install system packages required by our library
+yum install -y libpng-devel zlib-devel
 
 # Install newer devtools that work on manylinux
 #GCCLOC=https://github.com/squeaky-pl/centos-devtools/releases/download/6.3
@@ -41,7 +41,7 @@ done
 
 # Bundle external shared libraries into the wheels
 for whl in wheelhouse/*.whl; do
-    auditwheel repair "$whl" -w /io/wheelhouse/
+    auditwheel repair "$whl" -w /io/wheelhouse/ --no-deps
 done
 
 # Install packages and test
