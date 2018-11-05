@@ -5,12 +5,20 @@
 #   pip install -r dev-requirements.txt
 
 # activate desired python version:
-#   conda activate py37
+#   conda activate py37   # windows
+#   source activate py37  # mac / linux
+
+# (probably) make sure pip is updated
+#   python -m pip install --upgrade pip
 
 # to build and upload, for example:
-#   pip wheel . -w wheelhouse
+#   pip wheel . --no-deps -w wheelhouse
 #   twine upload wheelhouse/*.whl
 
 # use docker/travis scripts for manylinux.
 # then only need to upload with twine.
+
+# tag the release in github, e.g.:
+#   git tag 1.1.1
+#   git push -u origin master --tags
 

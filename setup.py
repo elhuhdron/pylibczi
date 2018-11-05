@@ -78,15 +78,6 @@ def build_libCZI():
         run_cmake('cmake')
 
 
-class specialized_build_ext(build_ext):
-    """Subclass of build_ext subcommand to build libCZI.
-    """
-
-    def run(self, *args, **kwargs):
-        build_libCZI()
-        build_ext.run(self, *args, **kwargs)
-
-
 class specialized_clean(clean):
     """Subclass of clean subcommand to clean libCZI.
     """
@@ -164,11 +155,25 @@ module1 = Extension('_pylibczi',
                     )
 
 
-data_files = []
-if not build_static:
-    data_files += glob.glob(os.path.join(lib_libCZI,'*.so'))
-    data_files += glob.glob(os.path.join(lib_libCZI,'*.dylib'))
-    data_files += glob.glob(os.path.join(lib_libCZI,'*.dll'))
+# stackoverflow.com/questions/41169711/python-setuptools-distutils-custom-build-for-the-extra-package-with-makefile
+class specialized_build_ext(build_ext):
+    """Subclass of build_ext subcommand to build libCZI.
+    """
+    special_extension = module1.name
+
+    def build_extension(self, ext):
+        if ext.name==self.special_extension:
+            build_libCZI()
+            if not build_static:
+                # xxx - hack to copy the dlls in case static build is not working (windows)
+                data_files = [('', glob.glob(os.path.join(lib_libCZI,'*.dll')))]
+                if self.distribution.data_files is None:
+                    self.distribution.data_files = data_files
+                else:
+                    self.distribution.data_files += data_files
+        # Build the c library's python interface with the parent build_extension method
+        super(specialized_build_ext, self).build_extension(ext)
+
 
 setup (name = 'pylibczi',
        version=version,
@@ -181,7 +186,7 @@ Python module to expose libCZI functionality for reading (subset of) Zeiss CZI f
 ''',
        ext_modules = [module1],
        packages = ['pylibczi'],
-       data_files = data_files,
+       #data_files = data_files, 
        install_requires=['scipy', 'numpy', 'lxml'],
        cmdclass={'build_ext': specialized_build_ext,
                  'clean': specialized_clean,
