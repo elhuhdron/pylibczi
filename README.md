@@ -1,3 +1,5 @@
+**NOTE: aicspylibczi**  This project has been forked and made into a much more general tool for reading czi files by developers at the Allen Institute for Cell Science at the Allen Institute. Please try this version with ``pip install aicspylibczi`` or visit the [fork homepage](https://github.com/AllenCellModeling/aicspylibczi).
+
 # pylibczi
 
 Python module to expose [libCZI](https://github.com/zeiss-microscopy/libCZI) functionality for reading (subset of) Zeiss CZI files and meta-data.
